@@ -1,4 +1,5 @@
-myplotpkg.egg-info/
+phyplot.egg-info/
 build/
 */__pycache__
 *.pyc
+note.md

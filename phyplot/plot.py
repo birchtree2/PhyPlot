@@ -47,7 +47,7 @@ class MyPlot:
         # 保存表格
         plt.savefig('table_'+self.filename)
 
-    def plot_fig(self, fit_deg: int = 1, bool=False ,show_coordinate:bool=False) -> None:
+    def plot_fig(self, fit_deg: int = 1 ,show_coordinate:bool=False) -> None:
         # 创建figure和子图
         fig, ax = plt.subplots(figsize=(8, 6))
         
@@ -60,11 +60,12 @@ class MyPlot:
                 if show_coordinate:
                     for i in range(len(self.data[self.x_label])):
                         ax.annotate(f"({self.data[self.x_label][i]}, {values[i]})", (self.data[self.x_label][i], values[i]), textcoords="offset points", xytext=(0,10), ha='center')
-
+        regression_results = []
         if fit_deg == 1:
-            regression_results = []
+            
             for label, values in self.data.items():
                 if label != self.x_label:
+                    print(label)
                     # 计算线性回归的多项式系数
                     coefficients = np.polyfit(self.data[self.x_label],values,fit_deg) 
                     poly = np.poly1d(coefficients)
@@ -74,7 +75,7 @@ class MyPlot:
                     lx=np.arange(min(self.data[self.x_label]),max(self.data[self.x_label])+0.2,step=0.1) #画曲线的点要更多
                     ax.plot(lx, poly(lx), color='orange', label=equation)
                     regression_results.append(coefficients)
-            return regression_results
+            
 
         else: #画平滑曲线
             for label, values in self.data.items():
@@ -89,7 +90,7 @@ class MyPlot:
         ax.legend()
         # 保存图表
         plt.savefig('figure_'+self.filename)
-
+        return regression_results
 
     def plot(self, fit_deg: int = 1) -> None:
         self.plot_table()
