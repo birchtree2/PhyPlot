@@ -47,7 +47,7 @@ class MyPlot:
         # 保存表格
         plt.savefig('table_'+self.filename)
 
-    def plot_fig(self, fit_deg: int = 1 ,show_coordinate:bool=False) -> None:
+    def plot_fig(self, fit_deg: int = 1 ,show_coordinate:bool=False):
         # 创建figure和子图
         fig, ax = plt.subplots(figsize=(8, 6))
         
@@ -92,7 +92,7 @@ class MyPlot:
         plt.savefig('figure_'+self.filename)
         return regression_results
 
-    def plot(self, fit_deg: int = 1) -> None:
+    def plot(self, fit_deg: int = 1, show_coordinate:bool=False):
         self.plot_table()
-        self.plot_fig(fit_deg)
+        return self.plot_fig(fit_deg,show_coordinate)
 
