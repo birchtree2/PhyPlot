@@ -1,7 +1,9 @@
 import numpy as np
 
-def relative_error(actual_value, measured_value):
+def relative_error(actual_value, measured_value, echo=True):
     relative_error = np.abs((actual_value - measured_value) / actual_value)
+    if(echo):
+         print(f"真实值={actual_value} 测量值={measured_value} 误差: {relative_error:.2%}")
     return relative_error
 
 def type_a_uncertainty(values): #A类不确定度

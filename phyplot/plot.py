@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import make_interp_spline
 from typing import Dict, List
-
+from matplotlib.ticker import FormatStrFormatter
 class MyPlot:
 
     def __init__(self, 
@@ -12,7 +12,7 @@ class MyPlot:
     ):
         self.data = data
         if x_label is None:
-            self.x_label = list(data.keys())[0] # 默认取第一个键
+            self.x_label = list(data.keys())[0] # 默认取第一个作为x轴
         else:
             self.x_label = x_label
         self.filename=filename
@@ -30,7 +30,7 @@ class MyPlot:
 
         plt.rc("font", family="SimSun", size=13, weight="bold")
         ax.axis('off')  # 关闭坐标轴
-        
+        #ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
         rowLabels=['序号']
         for key, values in self.data.items():
             rowLabels.append(key)
@@ -47,7 +47,7 @@ class MyPlot:
         # 保存表格
         plt.savefig('table_'+self.filename)
 
-    def plot_fig(self, fit_deg: int = 1 ,show_coordinate:bool=False):
+    def     plot_fig(self, fit_deg: int = 1 ,show_coordinate:bool=False):
         # 创建figure和子图
         fig, ax = plt.subplots(figsize=(8, 6))
         
@@ -60,23 +60,25 @@ class MyPlot:
                 if show_coordinate:
                     for i in range(len(self.data[self.x_label])):
                         ax.annotate(f"({self.data[self.x_label][i]}, {values[i]})", (self.data[self.x_label][i], values[i]), textcoords="offset points", xytext=(0,10), ha='center')
-        regression_results = []
+        slope=[]
+        intercept=[]
+        colors = ['blue','orange', 'green', 'red', 'purple', 'brown', 'pink', 'gray', 'olive', 'cyan']  
         if fit_deg == 1:
-            
-            for label, values in self.data.items():
+            for i, (label, values) in enumerate(self.data.items()): #enumerate
                 if label != self.x_label:
-                    print(label)
+                    # print(label)
                     # 计算线性回归的多项式系数
                     coefficients = np.polyfit(self.data[self.x_label],values,fit_deg) 
                     poly = np.poly1d(coefficients)
                     var,unit=self.split_label(label) #分离变量名和单位
                     equation= f"{var}={coefficients[0]:.2f}*x+{coefficients[1]:.2f} ({unit})"
-                    print(f"[log]: {var}={coefficients[0]:.2f}*x+{coefficients[1]:.2f} ({unit})")
-                    lx=np.arange(min(self.data[self.x_label]),max(self.data[self.x_label])+0.2,step=0.1) #画曲线的点要更多
-                    ax.plot(lx, poly(lx), color='orange', label=equation)
-                    regression_results.append(coefficients)
-            
-
+                    print(f"回归结果: {var}={coefficients[0]:.2f}*x+{coefficients[1]:.2f} ({unit})")
+                    lx=np.arange(min(self.data[self.x_label]),max(self.data[self.x_label])+0.2,step=0.1) 
+                    #画曲线的点要更多
+                    ax.plot(lx, poly(lx), color=colors[i % len(colors)], label=equation)
+                    #不同变量对应颜色
+                    slope.append(coefficients[0])
+                    intercept.append(coefficients[1])
         else: #画平滑曲线
             for label, values in self.data.items():
                 if label != self.x_label:
@@ -85,12 +87,18 @@ class MyPlot:
                     ys = m(xs)
                     plt.plot(xs, ys)
 
-        # ax.set_title(f"Graph")
+        # 设置图表标题和坐标轴标签
         ax.set_xlabel(self.x_label)
         ax.legend()
+        if len(self.data)>2 :
+            var,unit=self.split_label(list(self.data.keys())[1])
+            ax.set_ylabel(f'{var[0]}/{unit}')
+        else:
+            var,unit=self.split_label(list(self.data.keys())[1])
+            ax.set_ylabel(f'{var}/{unit}')
         # 保存图表
         plt.savefig('figure_'+self.filename)
-        return regression_results
+        return slope,intercept
 
     def plot(self, fit_deg: int = 1, show_coordinate:bool=False):
         self.plot_table()
