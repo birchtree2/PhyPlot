@@ -75,7 +75,3 @@ class MyPlot:
         self.plot_table()
         self.plot_scatter_with_regression(fit_deg)
 
-x=[4,8,12,16,20]
-y=[1.2,1.35,1.45,1.56,1.6]
-m=MyPlot({'x/mm':x,'U/V':y},x_label='x/mm')
-m.plot()
